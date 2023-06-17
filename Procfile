@@ -1,0 +1,1 @@
+web: gunicorn SAPDAPI.wsgi --log-file -
