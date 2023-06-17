@@ -105,16 +105,15 @@ WSGI_APPLICATION = 'SAPDAPI.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 import pymysql
-
 pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
-        'NAME': 'apisapd',
+        'NAME': 'railway',
         'ENGINE': 'mysql.connector.django',
-        'HOST': 'containers-us-west-144.railway.app',
-        'PORT': 6424,
+        'HOST': 'containers-us-west-14.railway.app',
+        'PORT': 7650,
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'rHhuTHYdkUV9GyK0phra',
         'OPTIONS': {
             'autocommit': True,
         },
