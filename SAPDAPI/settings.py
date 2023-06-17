@@ -111,8 +111,8 @@ DATABASES = {
     'default': {
         'NAME': 'apisapd',
         'ENGINE': 'mysql.connector.django',
-        'HOST': '127.0.0.1',
-        'PORT': 3300,
+        'HOST': 'containers-us-west-144.railway.app',
+        'PORT': 6424,
         'USER': 'root',
         'PASSWORD': '',
         'OPTIONS': {

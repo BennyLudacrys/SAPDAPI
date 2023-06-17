@@ -1,1 +1,1 @@
-web: gunicorn SAPDAPI.wsgi --log-file -
+web: python manage.py migrate && gunicorn SAPDAPI.wsgi
