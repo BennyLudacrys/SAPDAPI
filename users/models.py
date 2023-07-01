@@ -4,7 +4,6 @@ from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from cloudinary.models import CloudinaryField
 from django.utils import timezone
 from helpers.models import TrackingModel
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
