@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 import cloudinary_storage
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 MEDIA_URL = '/photos/'
@@ -42,11 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework_simplejwt',
     'rest_framework',
     'corsheaders',
     'users',
-    'reports',
+    'posts',
 
     'cloudinary_storage',
 ]
@@ -62,7 +66,6 @@ CLOUDINARY_STORAGE = {
 CLOUDINARY_URL = 'cloudinary://785413883832964:FOiok4tpbRm3obrJ56EintpBlG8@drxn8xsyi'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -82,6 +85,19 @@ REST_FRAMEWORK = {
         'users.jwt.JWTAuthentication',
     )
 }
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Sapd API",
+        default_version='v1',
+        description="rest framework",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="bennedito01@gmail.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 TEMPLATES = [
     {
@@ -105,6 +121,7 @@ WSGI_APPLICATION = 'SAPDAPI.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 import pymysql
+
 pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {

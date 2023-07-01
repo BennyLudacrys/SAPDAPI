@@ -25,20 +25,3 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = ('email', 'password', 'token')
         read_only_fields = ['token']
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('userId', 'first_name', 'last_name', 'email', 'cellphone', 'address', 'picture', 'password')
-
-
-# class PersonSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Person
-#         fields = (
-#             'name', 'last_name', 'nationality', 'address', 'date_of_birth', 'last_seen_location', 'cellphone', 'cellphone1', 'description',
-#             'disease', 'picture', 'status')
-
-
-# class LoginSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-#     password = serializers.CharField()
