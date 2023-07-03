@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+
+import cloudinary
 import cloudinary_storage
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -46,9 +48,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework',
     'corsheaders',
+
     'users',
     'posts',
-
+    'facial_recognition',
     'cloudinary_storage',
 ]
 
@@ -59,6 +62,12 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '785413883832964',
     'API_SECRET': 'FOiok4tpbRm3obrJ56EintpBlG8'
 }
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
 
 CLOUDINARY_URL = 'cloudinary://785413883832964:FOiok4tpbRm3obrJ56EintpBlG8@drxn8xsyi'
 
