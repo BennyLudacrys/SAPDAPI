@@ -27,14 +27,15 @@ class PersonListAPIView(ListCreateAPIView):
         image_file = self.request.data.get('picture')
 
         if image_file:
-            cloudinary_response = cloudinary_upload(image_file, max_file_size=20 * 1024 * 1024)
+            cloudinary_response = cloudinary_upload(image_file, folder='photos')
             if cloudinary_response and 'secure_url' in cloudinary_response:
                 picture_url = cloudinary_response['secure_url']
-                serializer.save(owner=self.request.user, picture=picture_url)
-        else:
-            serializer.save(owner=self.request.user)
 
-        # return serializer.save(owner=self.request.user)
+                picture_url = picture_url.split("photos/")[-1]
+                serializer.save(owner=self.request.user, picture=picture_url)
+                return
+
+        serializer.save(owner=self.request.user)
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
@@ -54,9 +55,12 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
 
             if cloudinary_response and 'secure_url' in cloudinary_response:
                 picture_url = cloudinary_response['secure_url']
+
+                picture_url = picture_url.split("photos/")[-1]
                 serializer.save(picture=picture_url)
-        else:
-            serializer.save()
+                return
+
+        serializer.save()
 
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
