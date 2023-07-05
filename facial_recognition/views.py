@@ -1,96 +1,107 @@
-import face_recognition
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.core.files.storage import FileSystemStorage
-from PIL import Image, ImageDraw
-import cloudinary
-from rest_framework.decorators import api_view
-from cloudinary_storage.storage import RawMediaCloudinaryStorage
-from django.conf import settings
-from rest_framework.response import Response
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from PIL import Image, ImageDraw
+import urllib.request
+
 import face_recognition
 import numpy as np
+from PIL import Image, ImageDraw
+from cloudinary import uploader
+from django.http import JsonResponse
 from posts.models import Post
+from rest_framework.decorators import api_view
 
 
 @api_view(['POST'])
 def detect_image(request):
-    # upload image
+    # Upload image to Cloudinary
     if request.method == 'POST' and request.FILES.get('image'):
         myfile = request.FILES['image']
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        # person = Person.objects.create(name="Swimoz", user_id="1", address="2020 Nehosho", picture=uploaded_file_url[1:])
+        response = uploader.upload(myfile)
+        uploaded_file_url = response['secure_url']
+
+        # Uncomment the following lines if you want to create a Person object with the uploaded image
+        # person = Person.objects.create(name="Swimoz", user_id="1", address="2020 Nehosho", picture=uploaded_file_url)
         # person.save()
 
-    images = []
-    encodings = []
-    names = []
-    files = []
+        # Fetch known face data from database
+        images = []
+        encodings = []
+        names = []
+        files = []
+        person_data = []  # Lista de dados das pessoas reconhecidas
 
-    posts = Post.objects.all()
-    for post in posts:
-        images.append(post.first_name + '_image')
-        encodings.append(post.first_name + '_face_encoding')
-        files.append(post.picture)
-        names.append(post.first_name + ' ' + post.address)
+        posts = Post.objects.all()
+        for post in posts:
+            images.append(post.first_name + '_image')
+            encodings.append(post.first_name + '_face_encoding')
+            files.append(post.picture)
+            names.append(post.first_name + ' ' + post.address)
 
-    for i in range(0, len(images)):
-        images[i] = face_recognition.load_image_file(files[i])
-        encodings[i] = face_recognition.face_encodings(images[i])[0]
+        # Load known face encodings and names
+        known_face_encodings = []
+        for i, image_path in enumerate(files):
+            image = face_recognition.load_image_file(image_path)
+            encoding = face_recognition.face_encodings(image)
+            if len(encoding) > 0:
+                known_face_encodings.append(encoding[0])
 
-    # Create arrays of known face encodings and their names
-    known_face_encodings = encodings
-    known_face_names = names
+        known_face_names = names
 
-    # Load an image with an unknown face
-    unknown_image = face_recognition.load_image_file(uploaded_file_url[1:])
+        # Download the unknown image from Cloudinary
+        urllib.request.urlretrieve(uploaded_file_url, 'unknown_image.jpg')
 
-    # Find all the faces and face encodings in the unknown image
-    face_locations = face_recognition.face_locations(unknown_image)
-    face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+        # Load the unknown image from the local file
+        unknown_image = face_recognition.load_image_file('unknown_image.jpg')
 
-    # Convert the image to a PIL-format image so that we can draw on top of it with the Pillow library
-    # See http://pillow.readthedocs.io/ for more about PIL/Pillow
-    pil_image = Image.fromarray(unknown_image)
-    # Create a Pillow ImageDraw Draw instance to draw with
-    draw = ImageDraw.Draw(pil_image)
+        # Find faces and encodings in the unknown image
+        face_locations = face_recognition.face_locations(unknown_image)
+        face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 
-    # Loop through each face found in the unknown image
-    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-        # See if the face is a match for the known face(s)
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        # Check if any faces were detected
+        if len(face_encodings) == 0:
+            # No faces were detected
+            return JsonResponse({'error': 'No faces were detected in the image.'})
 
-        name = "Unknown"
+        # Convert the image to a PIL-format image
+        pil_image = Image.fromarray(unknown_image)
+        draw = ImageDraw.Draw(pil_image)
 
-        # If a match was found in known_face_encodings, just use the first one.
-        # if True in matches:
-        #     first_match_index = matches.index(True)
-        #     name = known_face_names[first_match_index]
+        # Loop through each face found in the unknown image
+        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+            name = "Unknown"
+            data = {}  # Dados da pessoa
 
-        # Or instead, use the known face with the smallest distance to the new face
-        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-        best_match_index = np.argmin(face_distances)
-        if matches[best_match_index]:
-            name = known_face_names[best_match_index]
+            # Find the best match
+            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+            best_match_index = np.argmin(face_distances)
+            if matches[best_match_index]:
+                name = known_face_names[best_match_index]
+                post = posts[int(best_match_index)]
+                data['first_name'] = post.first_name
+                data['last_name'] = post.last_name
+                data['address'] = post.address
+                data['cellphone'] = post.cellphone
 
-        # Draw a box around the face using the Pillow module
-        draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+            # Draw a box around the face
+            draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
 
-        # Draw a label with a name below the face
-        text_width, text_height = draw.textsize(name)
-        draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
-        draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
+            # Draw a label with the name below the face
+            text_width, text_height = draw.textsize(name)
+            draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
+            draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
 
-    # Remove the drawing library from memory as per the Pillow docs
-    del draw
+            # Append the person's data to the list
+            person_data.append(data)
+        # Remove the drawing library from memory
+        del draw
 
-    # Save the resulting image to disk
-    pil_image.save(fs.path(filename))
+        # Save the resulting image to Cloudinary
+        result_image_path = 'result_image.jpg'
+        pil_image.save(result_image_path)
+        result_image_response = uploader.upload(result_image_path)
+        result_image_url = result_image_response['secure_url']
 
-    return Response(status=status.HTTP_200_OK)
+        # Return the result as a JSON response
+        return JsonResponse({'result_image_url': result_image_url, 'person_data': person_data})
+        # return JsonResponse({'result_image_url': result_image_url})
+
+    return JsonResponse({'error': 'No image file was provided.'})
