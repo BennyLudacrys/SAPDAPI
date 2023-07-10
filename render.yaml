@@ -1,1 +1,3 @@
-pythonVersion: 3.10
+env:
+  pythonVersion: 3.10.6
+  python_start_command: gunicorn SAPDAPI.wsgi:application --bind 0.0.0.0:$PORT
