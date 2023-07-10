@@ -1,1 +1,1 @@
-command: gunicorn SAPD.wsgi:application --bind 0.0.0.0:$PORT --workers 4
+command: gunicorn SAPDAPI.wsgi:application --bind 0.0.0.0:$PORT --workers 4
