@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 
 import cloudinary
-import cloudinary_storage
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 MEDIA_URL = '/photos/'
@@ -124,8 +123,9 @@ DATABASES = {
         'PORT': 3300,
         'USER': 'root',
         'PASSWORD': '',
+
         'OPTIONS': {
-            'autocommit': True,
+           'autocommit': True,
         },
     }
 }

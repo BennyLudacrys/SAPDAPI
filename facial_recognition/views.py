@@ -17,10 +17,6 @@ def detect_image(request):
         response = uploader.upload(myfile)
         uploaded_file_url = response['secure_url']
 
-        # Uncomment the following lines if you want to create a Person object with the uploaded image
-        # person = Person.objects.create(name="Swimoz", user_id="1", address="2020 Nehosho", picture=uploaded_file_url)
-        # person.save()
-
         # Fetch known face data from database
         images = []
         encodings = []
@@ -80,6 +76,10 @@ def detect_image(request):
                 data['last_name'] = post.last_name
                 data['address'] = post.address
                 data['cellphone'] = post.cellphone
+                data['identified_by'] = request.user.username
+
+                post.detected_by.add(request.user)
+                post.save()
 
             # Draw a box around the face
             draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
@@ -102,6 +102,5 @@ def detect_image(request):
 
         # Return the result as a JSON response
         return JsonResponse({'result_image_url': result_image_url, 'person_data': person_data})
-        # return JsonResponse({'result_image_url': result_image_url})
 
     return JsonResponse({'error': 'No image file was provided.'})
