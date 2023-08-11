@@ -49,6 +49,3 @@ vonage
 vonage-jwt
 wrapt
 yarl
-PyMySQL
-mysql-connector-python
-mysqlclient
