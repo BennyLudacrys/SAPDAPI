@@ -116,12 +116,12 @@ import pymysql
 pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
-        'NAME': 'apisapd',
+        'NAME': 'railway',
         'ENGINE': 'mysql.connector.django',
-        'HOST': 'containers-us-west-57.railway.app',
-        'PORT': 6247,
+        'HOST': 'containers-us-west-66.railway.app',
+        'PORT': 6164,
         'USER': 'root',
-        'PASSWORD': '2d7cJ473QoQdbdArkkQ9',
+        'PASSWORD': 'pHtz2Ar34y5rY7nLUzgP',
 
         'OPTIONS': {
            'autocommit': True,
