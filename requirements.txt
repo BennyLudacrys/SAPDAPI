@@ -1,3 +1,4 @@
+PyMySQL
 aiohttp
 aiohttp-retry
 aiosignal
@@ -49,3 +50,6 @@ vonage
 vonage-jwt
 wrapt
 yarl
+
+mysql-connector-python
+mysqlclient
