@@ -36,7 +36,6 @@ protobuf
 pycparser
 pydantic
 PyJWT
-PyMySQL
 python-dotenv
 pytz
 PyYAML
@@ -51,3 +50,4 @@ vonage
 vonage-jwt
 wrapt
 yarl
+PyMySQL
