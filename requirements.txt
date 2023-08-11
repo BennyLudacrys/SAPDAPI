@@ -27,8 +27,7 @@ gunicorn
 idna
 inflection
 multidict
-mysql-connector-python
-mysqlclient
+
 numpy
 packaging
 Pillow
@@ -51,3 +50,5 @@ vonage-jwt
 wrapt
 yarl
 PyMySQL
+mysql-connector-python
+mysqlclient
