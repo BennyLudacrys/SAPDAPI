@@ -79,10 +79,10 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
             #     return Response({'message': 'You are not authorized to change the status of this post'},
             #                     status=status.HTTP_401_UNAUTHORIZED)
 
-            if post.status == 'perdido':
-                post.status = 'encontrado'
-            elif post.status == 'encontrado':
-                post.status = 'perdido'
+            if post.status == 'Desaparecido':
+                post.status = 'Encontrado'
+            elif post.status == 'Encontrado':
+                post.status = 'Desaparecido'
             else:
                 return Response({'message': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -105,7 +105,20 @@ def get_posts_by_user(request, user_id):
                 'id': post.id,
                 'first_name': post.first_name,
                 'last_name': post.last_name,
-                # Adicione outros campos do modelo Post que você deseja retornar
+                "nationality": post.nationality,
+                "address": post.address,
+                "date_of_birth": post.date_of_birth,
+                "last_seen_location": post.last_seen_location,
+                "cellphone": post.cellphone,
+                "cellphone1": post.cellphone1,
+                "description": post.description,
+                "disease": post.disease,
+                "picture": post.picture.url,
+                "status": post.status,
+                "is_complete": post.is_complete,
+                # 'owner_first_name': post.owner.first_name,
+                # 'owner_last_name': post.owner.last_name,
+
             })
 
         return Response({'posts': post_data})
@@ -123,6 +136,19 @@ def get_post(request, post_id):
             'id': post.id,
             'first_name': post.first_name,
             'last_name': post.last_name,
+            "nationality": post.nationality,
+            "address": post.address,
+            "date_of_birth": post.date_of_birth,
+            "last_seen_location": post.last_seen_location,
+            "cellphone": post.cellphone,
+            "cellphone1": post.cellphone1,
+            "description": post.description,
+            "disease": post.disease,
+            "picture": post.picture.url,
+            "status": post.status,
+            "is_complete": post.is_complete,
+            # 'owner_first_name': post.owner.first_name,
+            # 'owner_last_name': post.owner.last_name,
             # Adicione outros campos do modelo Post que você deseja retornar
             'detected_by_count': detected_by_count,
         }
@@ -143,8 +169,6 @@ def get_all_posts(request):
                 'id': post.id,
                 'first_name': post.first_name,
                 'last_name': post.last_name,
-
-
                 "nationality": post.nationality,
                 "address": post.address,
                 "date_of_birth": post.date_of_birth,
@@ -155,12 +179,78 @@ def get_all_posts(request):
                 "disease": post.disease,
                 "picture": post.picture.url,
                 "status": post.status,
-                "desc": post.desc,
                 "is_complete": post.is_complete,
-                'owner_username': post.owner.username,
+                'owner_first_name': post.owner.first_name,
+                'owner_last_name': post.owner.last_name,
 
                 # 'owner': post.owner
                 # Adicione outros campos do modelo Post que você deseja retornar
+            })
+
+        return Response(post_data)
+    except Post.DoesNotExist:
+        return Response({'error': 'Nenhum Post foi Encontrado'})
+
+
+@api_view(['GET'])
+def get_posts_by_status(request):
+    try:
+        status_params = ['Desaparecido', 'Encontrado']
+
+        posts = Post.objects.filter(status__in=status_params)
+
+        post_data = []
+        for post in posts:
+            post_data.append({
+                'id': post.id,
+                'first_name': post.first_name,
+                'last_name': post.last_name,
+                "nationality": post.nationality,
+                "address": post.address,
+                "date_of_birth": post.date_of_birth,
+                "last_seen_location": post.last_seen_location,
+                "cellphone": post.cellphone,
+                "cellphone1": post.cellphone1,
+                "description": post.description,
+                "disease": post.disease,
+                "picture": post.picture.url,
+                "status": post.status,
+                "is_complete": post.is_complete,
+                'owner_first_name': post.owner.first_name,
+                'owner_last_name': post.owner.last_name,
+            })
+
+        return Response(post_data)
+    except Post.DoesNotExist:
+        return Response({'error': 'No posts found'})
+
+
+@api_view(['GET'])
+def get_free_posts(request):
+    try:
+        status_param = 'Livre'  # Define o status como "Free"
+
+        posts = Post.objects.filter(status=status_param, owner=request.user)
+
+        post_data = []
+        for post in posts:
+            post_data.append({
+                'id': post.id,
+                'first_name': post.first_name,
+                'last_name': post.last_name,
+                "nationality": post.nationality,
+                "address": post.address,
+                "date_of_birth": post.date_of_birth,
+                "last_seen_location": post.last_seen_location,
+                "cellphone": post.cellphone,
+                "cellphone1": post.cellphone1,
+                "description": post.description,
+                "disease": post.disease,
+                "picture": post.picture.url,
+                "status": post.status,
+                "is_complete": post.is_complete,
+                'owner_first_name': post.owner.first_name,
+                'owner_last_name': post.owner.last_name,
             })
 
         return Response(post_data)

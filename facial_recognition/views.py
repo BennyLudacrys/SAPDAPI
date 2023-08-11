@@ -2,6 +2,7 @@ import urllib.request
 
 import face_recognition
 import numpy as np
+import vonage
 from PIL import Image, ImageDraw
 from cloudinary import uploader
 from django.http import JsonResponse
@@ -75,11 +76,40 @@ def detect_image(request):
                 data['first_name'] = post.first_name
                 data['last_name'] = post.last_name
                 data['address'] = post.address
+                data['status'] = post.status
                 data['cellphone'] = post.cellphone
+                data['cellphone1'] = post.cellphone1
+                data['description'] = post.description
                 data['identified_by'] = request.user.username
 
-                post.detected_by.add(request.user)
-                post.save()
+                # client = vonage.Client(key="5f57e8e9", secret="Y1J1ELPXBgaj3n6T")
+                # sms = vonage.Sms(client)
+                #
+                # message_body = f"Ola, informamos que a(o) senhor(a) : {data['first_name']} {data['last_name']}\n"
+                # message_body += f"foi Encontrado e identificado no endereco: {data['address']}\n"
+                # message_body += f"pode entrar em contacto pelos numeros: {data['cellphone']}\n"
+                # message_body += f"que responde pelo nome de: {data['identified_by']}"
+                # message_body += f"Obrigado por usar a nossa aplicacao. Ate breve!"
+                # responseData = sms.send_message(
+                #     {
+                #         "from": "Vonage APIs",
+                #         "to": "258860240592",
+                #         "text": message_body,
+                #     }
+                # )
+                #
+                # if responseData["messages"][0]["status"] == "0":
+                #     print("Mensagem enviada com sucesso.")
+                # else:
+                #     print(f"Falha ao enviar a mensagem. erro: {responseData['messages'][0]['error-text']}")
+
+                # Check if the person is already detected by the current user
+                if request.user not in post.detected_by.all():
+                    post.detected_by.add(request.user)
+                    post.save()
+
+                else:
+                    data['error'] = 'Person already detected by this user.'
 
             # Draw a box around the face
             draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))

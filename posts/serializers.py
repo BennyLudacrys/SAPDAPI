@@ -1,12 +1,18 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import Post
 
 
 class PersonSerializer(ModelSerializer):
+    owner_first_name = serializers.CharField(source='owner.first_name', read_only=True)
+    owner_last_name = serializers.CharField(source='owner.last_name', read_only=True)
+
     class Meta:
         model = Post
+
         fields = ('id', 'first_name', 'last_name', 'nationality', 'address', 'date_of_birth', 'last_seen_location',
-                  'cellphone', 'cellphone1', 'desc', 'disease', 'picture', 'status', 'is_complete')
+                  'cellphone', 'cellphone1', 'description', 'disease', 'picture', 'status', 'is_complete',
+                  'owner_first_name', 'owner_last_name')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
