@@ -64,7 +64,9 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         # },
     )
 
-    address = models.CharField(_("address"), max_length=255)
+    address = models.CharField(_("address"), max_length=255, blank=True)
+    province = models.CharField(_("province"), max_length=255, blank=True)
+    country = models.CharField(_("country"), max_length=255, blank=True)
     phoneNumber = models.CharField(_("phoneNumber"), max_length=255, blank=True)
     alternativePhoneNumber = models.CharField(_("alternativePhoneNumber"), max_length=255, blank=True)
     first_name = models.CharField(_("first name"), max_length=150, blank=True)

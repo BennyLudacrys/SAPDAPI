@@ -12,7 +12,7 @@ class PersonSerializer(ModelSerializer):
 
         fields = ('id', 'first_name', 'last_name', 'nationality', 'address', 'date_of_birth', 'last_seen_location',
                   'cellphone', 'cellphone1', 'description', 'disease', 'picture', 'status', 'is_complete',
-                  'owner_first_name', 'owner_last_name')
+                  'owner_first_name', 'owner_last_name', 'kinship')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

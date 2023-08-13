@@ -80,9 +80,9 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
             #                     status=status.HTTP_401_UNAUTHORIZED)
 
             if post.status == 'Desaparecido':
-                post.status = 'Encontrado'
+                post.status = 'Livre'
             elif post.status == 'Encontrado':
-                post.status = 'Desaparecido'
+                post.status = 'Livre'
             else:
                 return Response({'message': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,6 +91,30 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
 
         except Post.DoesNotExist:
             return Response({'error': 'Post does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def change_statuss(request, post_id):
+    try:
+        post = get_object_or_404(Post, id=post_id)
+
+        # Verificar se o usuário autenticado é o proprietário do post
+        # if post.owner != request.user.username:
+        #     return Response({'message': 'You are not authorized to change the status of this post'},
+        #                     status=status.HTTP_401_UNAUTHORIZED)
+
+        if post.status == 'Desaparecido':
+            post.status = 'Livre'
+        elif post.status == 'Encontrado':
+            post.status = 'Livre'
+        else:
+            return Response({'message': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+
+        post.save()
+        return Response({'message': f'Status changed to "{post.status}"'}, status=status.HTTP_200_OK)
+
+    except Post.DoesNotExist:
+        return Response({'error': 'Post does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -116,7 +140,7 @@ def get_posts_by_user(request, user_id):
                 "picture": post.picture.url,
                 "status": post.status,
                 "is_complete": post.is_complete,
-                # 'owner_first_name': post.owner.first_name,
+                'kinship': post.kinship,
                 # 'owner_last_name': post.owner.last_name,
 
             })
@@ -147,6 +171,7 @@ def get_post(request, post_id):
             "picture": post.picture.url,
             "status": post.status,
             "is_complete": post.is_complete,
+            'kinship': post.kinship,
             # 'owner_first_name': post.owner.first_name,
             # 'owner_last_name': post.owner.last_name,
             # Adicione outros campos do modelo Post que você deseja retornar
@@ -179,6 +204,7 @@ def get_all_posts(request):
                 "disease": post.disease,
                 "picture": post.picture.url,
                 "status": post.status,
+                'kinship': post.kinship,
                 "is_complete": post.is_complete,
                 'owner_first_name': post.owner.first_name,
                 'owner_last_name': post.owner.last_name,
@@ -213,6 +239,7 @@ def get_posts_by_status(request):
                 "cellphone1": post.cellphone1,
                 "description": post.description,
                 "disease": post.disease,
+                'kinship': post.kinship,
                 "picture": post.picture.url,
                 "status": post.status,
                 "is_complete": post.is_complete,
@@ -248,6 +275,7 @@ def get_free_posts(request):
                 "disease": post.disease,
                 "picture": post.picture.url,
                 "status": post.status,
+                'kinship': post.kinship,
                 "is_complete": post.is_complete,
                 'owner_first_name': post.owner.first_name,
                 'owner_last_name': post.owner.last_name,

@@ -8,6 +8,7 @@ class Post(TrackingModel):
     last_name = models.CharField(max_length=255, blank=True)
     nationality = models.CharField(max_length=255, blank=True)
     address = models.CharField(max_length=255, blank=True)
+    kinship = models.CharField(max_length=255, blank=True)
     date_of_birth = models.CharField(max_length=255, null=True)
     last_seen_location = models.CharField(max_length=255, blank=True)
     cellphone = models.CharField(max_length=255, blank=True)

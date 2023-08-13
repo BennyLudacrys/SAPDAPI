@@ -9,6 +9,7 @@ urlpatterns = [
     path('<int:user_id>/posts/', views.get_posts_by_user, name='get_posts_by_user'),
     path('posts/<int:post_id>/', views.get_post, name='get_post'),
     path('allPosts/', views.get_all_posts, name='get_all_posts'),
+    path('posts/<int:post_id>/change-status/', views.change_statuss, name='change_post_status'),
     path('posts/<int:post_id>/change-status/', views.PersonDetailAPIView.change_status, name='change_post_status'),
     path('free-posts/', views.get_free_posts, name='get_free_posts'),
     path('get-post/', views.get_posts_by_status, name='get_post'),

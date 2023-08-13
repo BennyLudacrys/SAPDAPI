@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'posts',
     'facial_recognition',
     'cloudinary_storage',
+    'emergency_contact',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -112,16 +113,17 @@ WSGI_APPLICATION = 'SAPDAPI.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 import pymysql
 pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
-        'NAME': 'railway',
+        'NAME': 'apisapd',
         'ENGINE': 'mysql.connector.django',
-        'HOST': 'containers-us-west-66.railway.app',
-        'PORT': 6164,
+        'HOST': 'localhost',
+        'PORT': 3300,
         'USER': 'root',
-        'PASSWORD': 'pHtz2Ar34y5rY7nLUzgP',
+        'PASSWORD': '',
 
         'OPTIONS': {
            'autocommit': True,
