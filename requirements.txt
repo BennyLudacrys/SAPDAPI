@@ -50,5 +50,6 @@ vonage-jwt==1.0.0
 wrapt==1.15.0
 yarl==1.9.2
 
-mysql-connector-python
+mysql-connector-python==8.0.33
+mysqlclient==2.1.1
 
