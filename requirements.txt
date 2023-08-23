@@ -51,4 +51,4 @@ wrapt==1.15.0
 yarl==1.9.2
 
 mysql-connector-python
-mysqlclient
+
