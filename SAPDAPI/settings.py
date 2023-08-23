@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -92,6 +92,16 @@ REST_FRAMEWORK = {
         'users.jwt.JWTAuthentication',
     )
 }
+
+
+SIMPLE_JWT = {
+
+    'ALGORITHM': 'HS256',  # O algoritmo de assinatura JWT
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),  # Tempo de vida do refresh token
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=7),  # Tempo de vida do access token
+    'SLIDING_TOKEN_REFRESH_LIFETIME_ALLOW_REFRESH': True,  # Permite atualização do refresh token
+}
+
 
 TEMPLATES = [
     {

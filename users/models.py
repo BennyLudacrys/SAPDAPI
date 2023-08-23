@@ -99,6 +99,25 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
+    def generate_access_token(self):
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.utcnow() + timedelta(seconds=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds()),
+            'iat': datetime.utcnow(),
+        }
+        access_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        return access_token
+
+    def verify_access_token(self, token):
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+            return user_id == self.id
+        except jwt.ExpiredSignatureError:
+            return False
+        except jwt.DecodeError:
+            return False
+
     @property
     def token(self):
         token = jwt.encode({'username': self.username, 'email': self.email,

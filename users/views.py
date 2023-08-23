@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import response, status, permissions
 from rest_framework.generics import GenericAPIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegisterSerializer, LoginSerializer
 
@@ -33,9 +34,6 @@ class RegisterAPIView(GenericAPIView):
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-2
-
-
 class LoginAPIView(GenericAPIView):
     authentication_classes = []
     serializer_class = LoginSerializer
@@ -48,6 +46,12 @@ class LoginAPIView(GenericAPIView):
 
         if user:
             serializer = self.serializer_class(user)
-            return response.Response(serializer.data, status=status.HTTP_200_OK)
-        return response.Response({'message': "Credenciais invalidas, tente novamente"},
+
+            # Gerar um novo refresh token
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            return response.Response({'access_token': access_token, **serializer.data}, status=status.HTTP_200_OK)
+
+        return response.Response({'message': "Credenciais inválidas, tente novamente"},
                                  status=status.HTTP_401_UNAUTHORIZED)
