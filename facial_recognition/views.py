@@ -80,7 +80,31 @@ def detect_image(request):
                 data['cellphone'] = post.cellphone
                 data['cellphone1'] = post.cellphone1
                 data['description'] = post.description
+                data['created_at'] = post.created_at
                 data['identified_by'] = request.user.username
+
+                # 'updated_at': post.updated_at,
+                # "nationality": post.nationality,
+                # "address": post.address,
+                # "date_of_birth": post.date_of_birth,
+                # "last_seen_location": post.last_seen_location,
+                # "cellphone": post.cellphone,
+                # "cellphone1": post.cellphone1,
+                # "description": post.description,
+                # "disease": post.disease,
+                # "picture": post.picture.url,
+                # "status": post.status,
+                # "is_complete": post.is_complete,
+                # 'kinship': post.kinship,
+                # 'province': post.province,
+                # 'gender': post.gender,
+                # 'allergies': post.allergies,
+                # 'medical_conditions': post.medical_conditions,
+                # 'medications': post.medications,
+                # # 'owner_first_name': post.owner.first_name,
+                # # 'owner_last_name': post.owner.last_name,
+                # # Adicione outros campos do modelo Post que você deseja retornar
+                # 'detected_by_count': detected_by_count,
 
                 # client = vonage.Client(key="5f57e8e9", secret="Y1J1ELPXBgaj3n6T")
                 # sms = vonage.Sms(client)

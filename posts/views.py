@@ -2,6 +2,7 @@ import cloudinary
 from cloudinary.uploader import upload as cloudinary_upload
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -26,6 +27,8 @@ cloudinary.config(
 class PersonListAPIView(ListCreateAPIView):
     serializer_class = PersonSerializer
     permission_classes = (IsAuthenticated,)
+    filter_backends = [SearchFilter]
+    search_fields = ['status']  # Define os campos que podem ser filtrados
 
     def perform_create(self, serializer):
         image_file = self.request.data.get('picture')
@@ -42,7 +45,9 @@ class PersonListAPIView(ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        return Post.objects.filter(owner=self.request.user)
+        # Filtra os posts do usuário logado com base no status
+        queryset = Post.objects.filter(owner=self.request.user, status__in=['encontrado', 'desaparecido'])
+        return queryset
 
 
 class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
@@ -79,12 +84,14 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
             #     return Response({'message': 'You are not authorized to change the status of this post'},
             #                     status=status.HTTP_401_UNAUTHORIZED)
 
-            if post.status == 'Desaparecido':
+            if post.status == 'Livre':
+                post.status = 'Desaparecido'
+            if post.status == 'Encontrado':
                 post.status = 'Livre'
-            elif post.status == 'Encontrado':
-                post.status = 'Livre'
+            elif post.status == 'Livre':
+                post.status = 'Desaparecido'
             else:
-                return Response({'message': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'Estado Invalido'}, status=status.HTTP_400_BAD_REQUEST)
 
             post.save()
             return Response({'message': f'Status changed to "{post.status}"'}, status=status.HTTP_200_OK)
@@ -105,10 +112,12 @@ def change_statuss(request, post_id):
 
         if post.status == 'Desaparecido':
             post.status = 'Livre'
+        elif post.status == 'Livre':
+            post.status = 'Desaparecido'
         elif post.status == 'Encontrado':
             post.status = 'Livre'
         else:
-            return Response({'message': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Estado invalido'}, status=status.HTTP_400_BAD_REQUEST)
 
         post.save()
         return Response({'message': f'Status changed to "{post.status}"'}, status=status.HTTP_200_OK)
@@ -138,6 +147,7 @@ def get_posts_by_user(request, user_id):
                 "description": post.description,
                 "disease": post.disease,
                 "picture": post.picture.url,
+                'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 "status": post.status,
                 "is_complete": post.is_complete,
                 'kinship': post.kinship,
@@ -158,6 +168,8 @@ def get_post(request, post_id):
 
         post_data = {
             'id': post.id,
+            'created_at': post.created_at,
+            'updated_at': post.updated_at,
             'first_name': post.first_name,
             'last_name': post.last_name,
             "nationality": post.nationality,
@@ -195,8 +207,13 @@ def get_all_posts(request):
 
         post_data = []
         for post in posts:
+            owner_picture = post.owner.picture
+            owner_picture_url = owner_picture.url if owner_picture and owner_picture.name else None
+            owner_picture_url_utf8 = owner_picture_url.encode('utf-8').decode('utf-8') if owner_picture_url else None
             post_data.append({
                 'id': post.id,
+                'created_at': post.created_at,
+                'updated_at': post.updated_at,
                 'first_name': post.first_name,
                 'last_name': post.last_name,
                 "nationality": post.nationality,
@@ -207,20 +224,18 @@ def get_all_posts(request):
                 "cellphone1": post.cellphone1,
                 "description": post.description,
                 "disease": post.disease,
-                "picture": post.picture.url,
+                "picture": owner_picture_url_utf8,
                 "status": post.status,
                 'kinship': post.kinship,
                 "is_complete": post.is_complete,
                 'owner_first_name': post.owner.first_name,
                 'owner_last_name': post.owner.last_name,
+                'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'province': post.province,
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
                 'medications': post.medications,
-
-                # 'owner': post.owner
-                # Adicione outros campos do modelo Post que você deseja retornar
             })
 
         return Response(post_data)
@@ -237,8 +252,13 @@ def get_posts_by_status(request):
 
         post_data = []
         for post in posts:
+            owner_picture = post.owner.picture
+            owner_picture_url = owner_picture.url if owner_picture and owner_picture.name else None
+            owner_picture_url_utf8 = owner_picture_url.encode('utf-8').decode('utf-8') if owner_picture_url else None
             post_data.append({
                 'id': post.id,
+                'created_at': post.created_at,
+                'updated_at': post.updated_at,
                 'first_name': post.first_name,
                 'last_name': post.last_name,
                 "nationality": post.nationality,
@@ -254,6 +274,7 @@ def get_posts_by_status(request):
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
+                'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'medications': post.medications,
                 "picture": post.picture.url,
                 "status": post.status,
@@ -276,8 +297,13 @@ def get_free_posts(request):
 
         post_data = []
         for post in posts:
+            owner_picture = post.owner.picture
+            owner_picture_url = owner_picture.url if owner_picture and owner_picture.name else None
+            owner_picture_url_utf8 = owner_picture_url.encode('utf-8').decode('utf-8') if owner_picture_url else None
             post_data.append({
                 'id': post.id,
+                'created_at': post.created_at,
+                'updated_at': post.updated_at,
                 'first_name': post.first_name,
                 'last_name': post.last_name,
                 "nationality": post.nationality,
@@ -294,6 +320,7 @@ def get_free_posts(request):
                 'province': post.province,
                 'gender': post.gender,
                 'allergies': post.allergies,
+                'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'medical_conditions': post.medical_conditions,
                 'medications': post.medications,
                 "is_complete": post.is_complete,

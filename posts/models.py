@@ -4,6 +4,8 @@ from users.models import User
 
 
 class Post(TrackingModel):
+    # created_at = models.CharField(max_length=255, blank=True)
+    # updated_at = models.CharField(max_length=255, blank=True)
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
     nationality = models.CharField(max_length=255, blank=True)
