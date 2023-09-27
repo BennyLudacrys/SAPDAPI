@@ -126,35 +126,35 @@ WSGI_APPLICATION = 'SAPDAPI.wsgi.application'
 
 import pymysql
 pymysql.install_as_MySQLdb()
-DATABASES = {
-    'default': {
-        'NAME': 'apisapd',
-        'ENGINE': 'mysql.connector.django',
-        'HOST': 'localhost',
-        'PORT': 3300,
-        'USER': 'root',
-        'PASSWORD': '',
-
-        'OPTIONS': {
-           'autocommit': True,
-        },
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'NAME': 'railway',
+#         'NAME': 'apisapd',
 #         'ENGINE': 'mysql.connector.django',
-#         'HOST': 'containers-us-west-204.railway.app',
-#         'PORT': 6830,
+#         'HOST': 'localhost',
+#         'PORT': 3300,
 #         'USER': 'root',
-#         'PASSWORD': 'THYWpaeEiadteIbcj4kN',
+#         'PASSWORD': '',
 #
 #         'OPTIONS': {
 #            'autocommit': True,
 #         },
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'NAME': 'railway',
+        'ENGINE': 'mysql.connector.django',
+        'HOST': 'containers-us-west-66.railway.app',
+        'PORT': 5548,
+        'USER': 'root',
+        'PASSWORD': '8TwNnAPUKjwTnLANylNz',
+
+        'OPTIONS': {
+           'autocommit': True,
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -179,7 +179,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Maputo'
 
 USE_I18N = True
 

@@ -17,10 +17,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['picture'] = instance.picture.url  # Obter a URL da imagem sem duplicações
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     representation['picture'] = instance.picture.url  # Obter a URL da imagem sem duplicações
+    #     return representation
 
 
 class LoginSerializer(serializers.ModelSerializer):

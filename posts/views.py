@@ -1,4 +1,5 @@
 import cloudinary
+import django_filters
 from cloudinary.uploader import upload as cloudinary_upload
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -24,11 +25,25 @@ cloudinary.config(
 )
 
 
+class PostFilter(django_filters.FilterSet):
+    class Meta:
+        model = Post
+        fields = {
+            'first_name': ['icontains'],  # Pesquisa por parte do nome
+            'last_name': ['icontains'],   # Pesquisa por parte do sobrenome
+            'description': ['icontains'],  # Pesquisa por parte da descrição
+            'cellphone': ['icontains'],   # Pesquisa por parte do contato
+        }
+
+
 class PersonListAPIView(ListCreateAPIView):
     serializer_class = PersonSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = [SearchFilter]
-    search_fields = ['status']  # Define os campos que podem ser filtrados
+    search_fields = ['status', 'first_name', 'last_name', 'description', 'cellphone']  # Define os campos que podem ser filtrados
+    ordering_fields = '__all__'  # Campos para ordenação
+
+    filterset_class = PostFilter  # Use o filtro personalizado aqui
 
     def perform_create(self, serializer):
         image_file = self.request.data.get('picture')
@@ -175,6 +190,7 @@ def get_post(request, post_id):
             "nationality": post.nationality,
             "address": post.address,
             "date_of_birth": post.date_of_birth,
+            "date_of_disappearance": post.date_of_disappearance,
             "last_seen_location": post.last_seen_location,
             "cellphone": post.cellphone,
             "cellphone1": post.cellphone1,
@@ -185,6 +201,9 @@ def get_post(request, post_id):
             "is_complete": post.is_complete,
             'kinship': post.kinship,
             'province': post.province,
+            'block': post.block,
+            'neighborhood': post.neighborhood,
+            'houseNumber': post.houseNumber,
             'gender': post.gender,
             'allergies': post.allergies,
             'medical_conditions': post.medical_conditions,
@@ -219,6 +238,7 @@ def get_all_posts(request):
                 "nationality": post.nationality,
                 "address": post.address,
                 "date_of_birth": post.date_of_birth,
+                "date_of_disappearance": post.date_of_disappearance,
                 "last_seen_location": post.last_seen_location,
                 "cellphone": post.cellphone,
                 "cellphone1": post.cellphone1,
@@ -232,6 +252,9 @@ def get_all_posts(request):
                 'owner_last_name': post.owner.last_name,
                 'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'province': post.province,
+                'block': post.block,
+                'neighborhood': post.neighborhood,
+                'houseNumber': post.houseNumber,
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
@@ -264,6 +287,7 @@ def get_posts_by_status(request):
                 "nationality": post.nationality,
                 "address": post.address,
                 "date_of_birth": post.date_of_birth,
+                "date_of_disappearance": post.date_of_disappearance,
                 "last_seen_location": post.last_seen_location,
                 "cellphone": post.cellphone,
                 "cellphone1": post.cellphone1,
@@ -271,6 +295,9 @@ def get_posts_by_status(request):
                 "disease": post.disease,
                 'kinship': post.kinship,
                 'province': post.province,
+                'block': post.block,
+                'neighborhood': post.neighborhood,
+                'houseNumber': post.houseNumber,
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
@@ -309,6 +336,7 @@ def get_free_posts(request):
                 "nationality": post.nationality,
                 "address": post.address,
                 "date_of_birth": post.date_of_birth,
+                "date_of_disappearance": post.date_of_disappearance,
                 "last_seen_location": post.last_seen_location,
                 "cellphone": post.cellphone,
                 "cellphone1": post.cellphone1,
@@ -318,6 +346,9 @@ def get_free_posts(request):
                 "status": post.status,
                 'kinship': post.kinship,
                 'province': post.province,
+                'block': post.block,
+                'neighborhood': post.neighborhood,
+                'houseNumber': post.houseNumber,
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,

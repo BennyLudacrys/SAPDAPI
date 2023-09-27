@@ -12,13 +12,14 @@ from rest_framework.decorators import api_view
 
 @api_view(['POST'])
 def detect_image(request):
-    # Upload image to Cloudinary
+
+    # Upload para cloudinary
     if request.method == 'POST' and request.FILES.get('image'):
         myfile = request.FILES['image']
         response = uploader.upload(myfile)
         uploaded_file_url = response['secure_url']
 
-        # Fetch known face data from database
+        # Busca faces e dados da database
         images = []
         encodings = []
         names = []
@@ -32,7 +33,7 @@ def detect_image(request):
             files.append(post.picture)
             names.append(post.first_name + ' ' + post.address)
 
-        # Load known face encodings and names
+        # Carregar codificações e nomes de rostos conhecidos
         known_face_encodings = []
         for i, image_path in enumerate(files):
             image = face_recognition.load_image_file(image_path)
@@ -42,7 +43,7 @@ def detect_image(request):
 
         known_face_names = names
 
-        # Download the unknown image from Cloudinary
+        # Baixa a imagem desconhecida do Cloudinary
         urllib.request.urlretrieve(uploaded_file_url, 'unknown_image.jpg')
 
         # Load the unknown image from the local file
@@ -55,7 +56,7 @@ def detect_image(request):
         # Check if any faces were detected
         if len(face_encodings) == 0:
             # No faces were detected
-            return JsonResponse({'error': 'No faces were detected in the image.'})
+            return JsonResponse({'error': 'Nenhuma face detectada na imagem.'})
 
         # Convert the image to a PIL-format image
         pil_image = Image.fromarray(unknown_image)
@@ -64,23 +65,32 @@ def detect_image(request):
         # Loop through each face found in the unknown image
         for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "Unknown"
+            name = "Desconhecido"
             data = {}  # Dados da pessoa
 
             # Find the best match
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
+
                 name = known_face_names[best_match_index]
                 post = posts[int(best_match_index)]
+                owner_picture = post.owner.picture
+                owner_picture_url = owner_picture.url if owner_picture and owner_picture.name else None
+                owner_picture_url_utf8 = owner_picture_url.encode('utf-8').decode(
+                    'utf-8') if owner_picture_url else None
+
                 data['first_name'] = post.first_name
                 data['last_name'] = post.last_name
                 data['address'] = post.address
+                data['latitude'] = post.latitude
+                data['longitude'] = post.longitude
                 data['status'] = post.status
                 data['cellphone'] = post.cellphone
                 data['cellphone1'] = post.cellphone1
                 data['description'] = post.description
                 data['created_at'] = post.created_at
+                data['owner_picture'] = owner_picture_url_utf8
                 data['identified_by'] = request.user.username
 
                 # 'updated_at': post.updated_at,
