@@ -19,10 +19,10 @@ django-cors-headers
 django-filter
 djangorestframework
 djangorestframework-simplejwt
-dlib
 drf-yasg
 face-recognition
 face-recognition-models
+dlib
 frozenlist
 googlemaps
 gunicorn
