@@ -32,8 +32,7 @@ itypes
 Jinja2
 MarkupSafe
 multidict
-mysql-connector-python
-mysqlclient
+
 numpy
 packaging
 Pillow
