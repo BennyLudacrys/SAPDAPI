@@ -20,9 +20,7 @@ django-filter
 djangorestframework
 djangorestframework-simplejwt
 drf-yasg
-face-recognition
-face-recognition-models
-dlib
+
 frozenlist
 googlemaps
 gunicorn
