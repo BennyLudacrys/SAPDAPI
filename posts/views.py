@@ -11,6 +11,7 @@ from users.models import User
 
 from .models import Post
 from .serializers import PersonSerializer
+from comments.serializers import CommentSerializer
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'drxn8xsyi',
@@ -89,6 +90,16 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Post.objects.filter(owner=self.request.user)
 
+    def retrieve(self, request, *args, **kwargs):
+        post = self.get_object()
+        serializer = self.get_serializer(post)
+        comments_serializer = CommentSerializer(post.comments.all(), many=True)
+        data = {
+            'post_data': serializer.data,
+            'comments': comments_serializer.data
+        }
+        return Response(data)
+
     @api_view(['POST'])
     def change_status(self, post_id):
         try:
@@ -165,6 +176,7 @@ def get_posts_by_user(request, user_id):
                 'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 "status": post.status,
                 "is_complete": post.is_complete,
+                'detected_by_count': post.get_detected_by_count(),
                 'kinship': post.kinship,
                 # 'owner_last_name': post.owner.last_name,
 
@@ -211,7 +223,8 @@ def get_post(request, post_id):
             # 'owner_first_name': post.owner.first_name,
             # 'owner_last_name': post.owner.last_name,
             # Adicione outros campos do modelo Post que você deseja retornar
-            'detected_by_count': detected_by_count,
+            'detected_by_count': post.get_detected_by_count(),
+            # 'detected_by_count': detected_by_count,
         }
 
         return Response(post_data)
@@ -258,6 +271,7 @@ def get_all_posts(request):
                 'gender': post.gender,
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
+                'detected_by_count': post.get_detected_by_count(),
                 'medications': post.medications,
             })
 
@@ -303,6 +317,7 @@ def get_posts_by_status(request):
                 'medical_conditions': post.medical_conditions,
                 'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'medications': post.medications,
+                'detected_by_count': post.get_detected_by_count(),
                 "picture": post.picture.url,
                 "status": post.status,
                 "is_complete": post.is_complete,
@@ -355,6 +370,7 @@ def get_free_posts(request):
                 'medical_conditions': post.medical_conditions,
                 'medications': post.medications,
                 "is_complete": post.is_complete,
+                'detected_by_count': post.get_detected_by_count(),
                 'owner_first_name': post.owner.first_name,
                 'owner_last_name': post.owner.last_name,
             })
@@ -362,3 +378,4 @@ def get_free_posts(request):
         return Response(post_data)
     except Post.DoesNotExist:
         return Response({'error': 'No posts found'})
+

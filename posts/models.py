@@ -1,6 +1,7 @@
 from helpers.models import TrackingModel
 from django.db import models
 from users.models import User
+from django.conf import settings
 
 
 class Post(TrackingModel):
@@ -33,6 +34,7 @@ class Post(TrackingModel):
     is_complete = models.BooleanField(default=False, blank=True)
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='owned_posts', null=True)
     detected_by = models.ManyToManyField(User, related_name='detected_posts',  blank=True)
+    comments = models.ManyToManyField('comments.Comment', related_name='comments_post', blank=True)
 
     def __str__(self):
         return self.first_name

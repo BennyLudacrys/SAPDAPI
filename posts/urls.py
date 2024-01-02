@@ -2,6 +2,8 @@ from . import views
 from .views import PersonListAPIView, PersonDetailAPIView, get_free_posts
 from django.urls import path
 
+from comments.views import CommentListCreateAPIView, CommentDetailAPIView
+
 urlpatterns = [
     path('', PersonListAPIView.as_view(), name="list-posts"),
     path('<int:id>', PersonDetailAPIView.as_view(), name="detail-posts"),
@@ -13,5 +15,9 @@ urlpatterns = [
     path('posts/<int:post_id>/change-status/', views.PersonDetailAPIView.change_status, name='change_post_status'),
     path('free-posts/', views.get_free_posts, name='get_free_posts'),
     path('get-post/', views.get_posts_by_status, name='get_post'),
+
+    path('<int:post_id>/comments/', CommentListCreateAPIView.as_view(), name='comment-list-create'),
+    path('<int:post_id>/comments/<int:id>/', CommentDetailAPIView.as_view(), name='comment-detail'),
+
 
 ]

@@ -91,7 +91,10 @@ def detect_image(request):
                 data['description'] = post.description
                 data['created_at'] = post.created_at
                 data['owner_picture'] = owner_picture_url_utf8
+                data['owner_first_name'] = post.owner.first_name
+                data['owner_last_name'] = post.owner.last_name
                 data['identified_by'] = request.user.username
+                data['detected_by_count'] = post.get_detected_by_count()
 
                 # 'updated_at': post.updated_at,
                 # "nationality": post.nationality,
