@@ -24,3 +24,4 @@ class PersonSerializer(ModelSerializer):
         representation = super().to_representation(instance)
         representation['picture'] = instance.picture.url  # Obter a URL da imagem sem duplicações
         return representation
+

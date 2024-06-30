@@ -33,8 +33,7 @@ class Post(TrackingModel):
     status = models.CharField(max_length=255, blank=True)
     is_complete = models.BooleanField(default=False, blank=True)
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='owned_posts', null=True)
-    detected_by = models.ManyToManyField(User, related_name='detected_posts',  blank=True)
-    comments = models.ManyToManyField('comments.Comment', related_name='comments_post', blank=True)
+    detected_by = models.ManyToManyField(User, related_name='detected_posts', blank=True)
 
     def __str__(self):
         return self.first_name
@@ -42,3 +41,7 @@ class Post(TrackingModel):
     # retornar a contagem de usuários que identificaram o post:
     def get_detected_by_count(self):
         return self.detected_by.count()
+
+    def get_comments_count(self):
+        from comments.models import Comment
+        return Comment.objects.filter(post=self).count()

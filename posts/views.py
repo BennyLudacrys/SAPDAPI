@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import cloudinary
 import django_filters
 from cloudinary.uploader import upload as cloudinary_upload
@@ -109,6 +111,7 @@ class PersonDetailAPIView(RetrieveUpdateDestroyAPIView):
             # if post.owner != request.user.username:
             #     return Response({'message': 'You are not authorized to change the status of this post'},
             #                     status=status.HTTP_401_UNAUTHORIZED)
+            post.date_of_disappearance = datetime.now().strftime("%m/%d/%Y")
 
             if post.status == 'Livre':
                 post.status = 'Desaparecido'
@@ -135,6 +138,7 @@ def change_statuss(request, post_id):
         # if post.owner != request.user.username:
         #     return Response({'message': 'You are not authorized to change the status of this post'},
         #                     status=status.HTTP_401_UNAUTHORIZED)
+        post.date_of_disappearance = datetime.now().strftime("%m/%d/%Y")
 
         if post.status == 'Desaparecido':
             post.status = 'Livre'
@@ -177,6 +181,7 @@ def get_posts_by_user(request, user_id):
                 "status": post.status,
                 "is_complete": post.is_complete,
                 'detected_by_count': post.get_detected_by_count(),
+                'get_comments_count': post.get_comments_count(),
                 'kinship': post.kinship,
                 # 'owner_last_name': post.owner.last_name,
 
@@ -224,6 +229,7 @@ def get_post(request, post_id):
             # 'owner_last_name': post.owner.last_name,
             # Adicione outros campos do modelo Post que você deseja retornar
             'detected_by_count': post.get_detected_by_count(),
+            'get_comments_count': post.get_comments_count(),
             # 'detected_by_count': detected_by_count,
         }
 
@@ -272,6 +278,7 @@ def get_all_posts(request):
                 'allergies': post.allergies,
                 'medical_conditions': post.medical_conditions,
                 'detected_by_count': post.get_detected_by_count(),
+                'get_comments_count': post.get_comments_count(),
                 'medications': post.medications,
             })
 
@@ -318,6 +325,7 @@ def get_posts_by_status(request):
                 'owner_picture': owner_picture_url_utf8 if owner_picture_url else None,
                 'medications': post.medications,
                 'detected_by_count': post.get_detected_by_count(),
+                'get_comments_count': post.get_comments_count(),
                 "picture": post.picture.url,
                 "status": post.status,
                 "is_complete": post.is_complete,
@@ -371,6 +379,7 @@ def get_free_posts(request):
                 'medications': post.medications,
                 "is_complete": post.is_complete,
                 'detected_by_count': post.get_detected_by_count(),
+                'get_comments_count': post.get_comments_count(),
                 'owner_first_name': post.owner.first_name,
                 'owner_last_name': post.owner.last_name,
             })
